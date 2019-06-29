@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os, time
 
 class Queue:
     def __init__(self, timedelta_sec, arrival_rate, process_h, time_total_h):
@@ -11,7 +12,6 @@ class Queue:
         self.time_total_h = time_total_h
     
     def simulate(self):
-        
         # Sequential simulation
         buffer = 0
         occupied = False
@@ -57,22 +57,31 @@ class Queue:
         waiting_time = waiting_time[:process]
         # queue number (Nx4)
         step_in = np.arange(0,self.time_total/self.sec_resolution,1/self.sec_resolution)
-        a = np.array([step_in, mos, mos.cumsum(),pl])
+        queue_number = np.array([step_in, pl])
         
+        # Export data
+        path = os.getcwd()
+        n_folder = os.path.join(path,'exports', str(int(time.time())))
+        wt = os.path.join(n_folder,'waiting_time.csv')
+        qn = os.path.join(n_folder,'queue_number.csv')
+
+        os.makedirs(n_folder)
+        np.savetxt(wt, waiting_time, delimiter=",")
+        np.savetxt(qn, queue_number, delimiter=",")
         
 if __name__ == "__main__":
     # Simulation variables
     timedelta_sec = 1        # resolution for one sec ie. steps for one sec
     arrival_h = 5.8          # ratio of arrival per hour
     process_h = 6            # ratio of processing per hour
-    time_total_h = 1000      # hours of simulation
+    time_total_h = 10000     # hours of simulation
     
     # Class init
     q = Queue(timedelta_sec, arrival_h, process_h, time_total_h)
     
     for _ in range(1000):
         q.simulate()
-        print(f'Simulation #{i} completed!')
+        print(f'Simulation #{_} completed!')
     
     print("Everything done")
     
