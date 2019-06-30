@@ -16,7 +16,8 @@ class Queue:
         buffer = 0
         occupied = False
         timestart = -1
-        pl = np.zeros(self.time_total)
+        #pl = np.zeros(self.time_total)
+        pl = 0
         enter_queue = np.zeros(self.process_h*self.time_total_h)
         enter_server = np.zeros(self.process_h*self.time_total_h)
 
@@ -50,33 +51,35 @@ class Queue:
             elif occupied and ((step-timestart) == self.process_sec):
                 occupied = False
                 
-            pl[step] = buffer
+            pl += buffer
             
         # waiting time (Nx1)
         waiting_time = enter_server - enter_queue
         waiting_time = waiting_time[:process]
         # queue number (Nx4)
-        step_in = np.arange(0,self.time_total/self.sec_resolution,1/self.sec_resolution)
-        queue_number = np.array([step_in, pl])
+        #step_in = np.arange(0,self.time_total/self.sec_resolution,1/self.sec_resolution)
+        #queue_number = np.array([step_in, pl])
         
         # Export data
         path = os.getcwd()
         n_folder = os.path.join(path,'exports', str(int(time.time())))
         wt = os.path.join(n_folder,'waiting_time.csv')
-        qn = os.path.join(n_folder,'queue_number.csv')
+        #qn = os.path.join(n_folder,'queue_number.csv')
         metrics = os.path.join(n_folder,'metrics.csv')
 
         os.makedirs(n_folder)
         np.savetxt(wt, waiting_time, delimiter=",")
-        np.savetxt(qn, pl, delimiter=",")
-        np.savetxt(metrics, [sum(waiting_time)/len(waiting_time)/60, sum(queue_number[1])/len(queue_number[1])], delimiter=";")
+        #np.savetxt(qn, pl, delimiter=",")
+        np.savetxt(metrics, [sum(waiting_time)/len(waiting_time)/60, pl/self.time_total], delimiter=";")
+        
+        print(np.genfromtxt(metrics, delimiter=';'))
         
 if __name__ == "__main__":
     # Simulation variables
     timedelta_sec = 1        # resolution for one sec ie. steps for one sec
     arrival_h = 5.8          # ratio of arrival per hour
     process_h = 6            # ratio of processing per hour
-    time_total_h = 10000     # hours of simulation
+    time_total_h = 20000     # hours of simulation
     
     # Class init
     q = Queue(timedelta_sec, arrival_h, process_h, time_total_h)
