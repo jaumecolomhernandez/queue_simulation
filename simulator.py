@@ -64,10 +64,12 @@ class Queue:
         n_folder = os.path.join(path,'exports', str(int(time.time())))
         wt = os.path.join(n_folder,'waiting_time.csv')
         qn = os.path.join(n_folder,'queue_number.csv')
+        metrics = os.path.join(n_folder,'metrics.csv')
 
         os.makedirs(n_folder)
         np.savetxt(wt, waiting_time, delimiter=",")
-        np.savetxt(qn, queue_number, delimiter=",")
+        np.savetxt(qn, pl, delimiter=",")
+        np.savetxt(metrics, [sum(waiting_time)/len(waiting_time)/60, sum(queue_number[1])/len(queue_number[1])], delimiter=";")
         
 if __name__ == "__main__":
     # Simulation variables
